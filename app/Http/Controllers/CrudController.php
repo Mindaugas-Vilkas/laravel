@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Crud;
+
 class CrudController extends Controller
 {
     /**
@@ -48,7 +50,8 @@ class CrudController extends Controller
      */
     public function show($id)
     {
-        //
+        $crud = Crud::find($id);
+        return view('crud.show', array('crud' => $crud));
     }
 
     /**
