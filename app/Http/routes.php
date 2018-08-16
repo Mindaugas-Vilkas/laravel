@@ -12,6 +12,7 @@
 */
 
 Use App\Crud;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,10 +37,13 @@ Route::delete('rest/v1/{id}', 'CrudController@delete');
 
 //-----------------------------------
 
+//Region Create
 Route::post('rest/v1', function (Request $request) {
     return Crud::create($request->all());
 });
+//End region
 
+//Region Read
 Route::get('rest/v1', function () {
     return Crud::all();
 });
@@ -47,12 +51,15 @@ Route::get('rest/v1', function () {
 Route::get('rest/v1/{id}', function ($id) {
     return Crud::find($id);
 });
+//End region
 
+//Region Update
 Route::put('rest/v1/{id}', function ( $id, Request $request) {
     $crud = Crud::findOrFail($id);
     $crud->update($request->all());
     return $crud;
 });
+//End region
 
 Route::delete('rest/v1/{id}', function ($id) {
     Crud::find($id)->delete();
