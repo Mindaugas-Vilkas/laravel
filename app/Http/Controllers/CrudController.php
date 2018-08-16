@@ -79,7 +79,7 @@ class CrudController extends Controller
      *
      * @param  Crud  $crud
      * @return \Illuminate\Http\Response
-     * @throws \HttpResponseException
+     * @throws *
      */
     public function delete(Crud $crud)
     {
