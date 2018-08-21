@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class crud extends Model
 {
-    protected $fillable = ['taskName', 'taskDescription'];
+    protected $fillable = ['taskName', 'taskDescription', 'dueDate'];
 }
