@@ -4,17 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Crud;
+use Illuminate\Support\Facades\Cache;
 
 class CrudController extends Controller
 {
     /**
      * Display a listing of the resources.
      *
-     * @return \App\crud[]\
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return Crud::all();
+        // Create a cached version of the task list for one day.
+        // Will be invalidated as new tasks are made or old ones deleted.
+        $response = Cache::remember('tasks', 24*60, function(){
+            return Crud::all();
+        });
+        return response()->json($response);
     }
 
     /**
@@ -35,6 +41,9 @@ class CrudController extends Controller
      */
     public function store(Request $request)
     {
+        // Invalidate the cache whenever the tasks are updated.
+        // Then let the normal request methods update it if necessary.
+        Cache::forget('tasks');
         $task = Crud::create($request->all());
         return response()->json($task, 201);
     }
@@ -47,7 +56,13 @@ class CrudController extends Controller
      */
     public function show($id)
     {
-        return Crud::find($id);
+        // Cache any individual task that has been requested individually to reduce server strain
+        // using the unique DB ID for the cache as well.
+        $response = Cache::remember("task-{$id}", 24*60, function () use($id) {
+            return Crud::find($id);
+        });
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -69,6 +84,11 @@ class CrudController extends Controller
      */
     public function update(Request $request, Crud $crud, $id)
     {
+        // Invalidate both the index cache and the specific task cache if it has been updated.
+        // Then let the normal request methods update it if necessary.
+        Cache::forget('tasks');
+        Cache::forget("task-{$id}");
+
         $crud = Crud::findOrFail($id);
         $crud->update($request->all());
         return response()->json($crud, 200);
@@ -84,8 +104,12 @@ class CrudController extends Controller
      */
     public function delete(Crud $crud, $id)
     {
-        $crud->find($id)->delete();
+        // Invalidate both the index cache and the specific task cache if it has been deleted.
+        // Then let the normal request methods update it if necessary.
+        Cache::forget('tasks');
+        Cache::forget("task-{$id}");
 
+        $crud->find($id)->delete();
         return response()->json(null, 201);
     }
 }
