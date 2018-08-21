@@ -45,9 +45,9 @@ class CrudController extends Controller
      * @param  Crud  $crud
      * @return \Illuminate\Http\Response
      */
-    public function show(Crud $crud)
+    public function show($id)
     {
-        return Crud::find($crud);
+        return Crud::find($id);
     }
 
     /**
@@ -67,10 +67,10 @@ class CrudController extends Controller
      * @param  Crud  $crud
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Crud $crud)
+    public function update(Request $request, Crud $crud, $id)
     {
+        $crud = Crud::findOrFail($id);
         $crud->update($request->all());
-
         return response()->json($crud, 200);
     }
 
@@ -78,12 +78,13 @@ class CrudController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  Crud  $crud
+     * @param Int $id
      * @return \Illuminate\Http\Response
      * @throws *
      */
-    public function delete(Crud $crud)
+    public function delete(Crud $crud, $id)
     {
-        $crud->delete();
+        $crud->find($id)->delete();
 
         return response()->json(null, 201);
     }
