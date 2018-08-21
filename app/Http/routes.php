@@ -18,9 +18,16 @@ Route::get('/', function() {
     return view('listActions');
 });
 
-Route::get('rest/v1', 'CrudController@index');
-Route::get('rest/v1/{id}', 'CrudController@show');
-Route::post('rest/v1', 'CrudController@store');
+Route::group(['prefix' => 'rest'], function (){
 
-Route::put('rest/v1/{id}', 'CrudController@update');
-Route::delete('rest/v1/{id}', 'CrudController@delete');
+    Route::get('v1', 'CrudController@index');
+
+    Route::get('v1/{id}', 'CrudController@show');
+
+    Route::post('v1', 'CrudController@store');
+
+    Route::put('v1/{id}', 'CrudController@update');
+
+    Route::delete('v1/{id}', 'CrudController@delete');
+
+});
